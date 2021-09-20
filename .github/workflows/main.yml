@@ -22,11 +22,11 @@ jobs:
 
     steps:
       - name: Fetch JSON
-      - run: |
+        run: |
           curl --location --request GET --header "Authorization: Bearer ${{secrets.CONFIG_API}}" --url "https://platform.segmentapis.com/v1beta/workspaces/segment-sa/tracking-plans/rs_1tj2LiXXBrOytuy4MiE4ZJjFm8b"
  
       - name: Publish json
-      - uses: EndBug/add-and-commit@v7
+        uses: EndBug/add-and-commit@v7
         with:
           message: Show GitHub Actions logo
           committer_name: GitHub Actions
