@@ -23,6 +23,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
       
       - name: Fetch taxonomy
         run: |
@@ -31,12 +33,14 @@ jobs:
           mkdir -p output
           yes| cp -rf taxonomy.json ./output/
       
-      - name: Commit files # commit the output folder
-        run: |
-          git config --local user.email "test@github.com"
-          git config --local user.name "GitHub Action test"
-          git add ./output
-          git commit -m "Add changes"
+      - name: Diff report
+        run:
+          git diff HEAD^ HEAD
           
-      - name: Push changes # push the output folder to your repo
-        run: git push
+      - name: Commit/Push files in the output folder
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add ./output
+          git commit -m "Update detected"
+          git push
