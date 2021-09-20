@@ -23,6 +23,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          github_token: ${{github.token}}
       
       - name: Fetch taxonomy
         run: |
@@ -39,7 +41,4 @@ jobs:
           git commit -m "Add changes"
           
       - name: Push changes # push the output folder to your repo
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ github.token }}
-          force: true
+        run: git push
