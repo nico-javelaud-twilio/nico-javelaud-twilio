@@ -35,7 +35,7 @@ jobs:
       
       - name: Diff report
         run:
-          git diff HEAD^ HEAD
+          git diff origin/main -- ./output/
           
       - name: Commit/Push files in the output folder
         run: |
