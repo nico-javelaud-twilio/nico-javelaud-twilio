@@ -23,11 +23,10 @@ jobs:
     steps:
       - name: Fetch JSON
         run: |
-          curl --location --request GET --header "Authorization: Bearer dycTCNXIQV1OmpEkmOF0otbCet9H7Y-iB8Zsm7NmdVc.bhGWwdvwotC_Va6l3Lg-aNXWtPhFKaRsQnHfygb0WF4" --url "https://platform.segmentapis.com/v1beta/workspaces/wawa-dev/tracking-plans/rs_1tAx8iqnqw9Whin7DLQXqjCh04n"
- 
-      - name: Publish json
-        uses: EndBug/add-and-commit@v7
+          TRACKING_PLAN = $(curl --location --request GET --header "Authorization: Bearer dycTCNXIQV1OmpEkmOF0otbCet9H7Y-iB8Zsm7NmdVc.bhGWwdvwotC_Va6l3Lg-aNXWtPhFKaRsQnHfygb0WF4" --url "https://platform.segmentapis.com/v1beta/workspaces/wawa-dev/tracking-plans/rs_1tAx8iqnqw9Whin7DLQXqjCh04n")
+        
+      - name: Push changes # push the output folder to your repo
+        uses: ad-m/github-push-action@master
         with:
-          message: Show GitHub Actions logo
-          committer_name: GitHub Actions
-          committer_email: actions@github.com
+          github_token: ${{ github.token }}
+          force: true
