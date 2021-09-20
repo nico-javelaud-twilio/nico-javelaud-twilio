@@ -24,10 +24,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-      - name: Fetch JSON
+      - name: Fetch taxonomy
         run: |
           TRACKING_PLAN=$(curl --location --request GET --header "Authorization: Bearer dycTCNXIQV1OmpEkmOF0otbCet9H7Y-iB8Zsm7NmdVc.bhGWwdvwotC_Va6l3Lg-aNXWtPhFKaRsQnHfygb0WF4" --url "https://platform.segmentapis.com/v1beta/workspaces/wawa-dev/tracking-plans/rs_1tAx8iqnqw9Whin7DLQXqjCh04n")
-        
+          echo $TRACKING_PLAN >> taxonomy.json 
+          mkdir -p output
+          yes| cp -rf taxonomy.json ./output/
+      
+      - name: Commit files # commit the output folder
+        run: |
+          git config --local user.email "test@github.com"
+          git config --local user.name "GitHub Action test"
+          git add ./output
+          git commit -m "Add changes"
+          
       - name: Push changes # push the output folder to your repo
         uses: ad-m/github-push-action@master
         with:
