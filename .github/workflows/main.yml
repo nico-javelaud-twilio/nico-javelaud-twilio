@@ -17,10 +17,13 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   build:
+    
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
+      
       - name: Fetch JSON
         run: |
           TRACKING_PLAN=$(curl --location --request GET --header "Authorization: Bearer dycTCNXIQV1OmpEkmOF0otbCet9H7Y-iB8Zsm7NmdVc.bhGWwdvwotC_Va6l3Lg-aNXWtPhFKaRsQnHfygb0WF4" --url "https://platform.segmentapis.com/v1beta/workspaces/wawa-dev/tracking-plans/rs_1tAx8iqnqw9Whin7DLQXqjCh04n")
