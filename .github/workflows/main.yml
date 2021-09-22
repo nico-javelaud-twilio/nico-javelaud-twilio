@@ -32,7 +32,7 @@ jobs:
           echo $TRACKING_PLAN >> taxonomy.json 
           mkdir -p output
           yes| cp -rf taxonomy.json ./output/
-          git diff origin/main/output/taxonomy.json ./output/taxonomy.json
+          git diff main:./output/taxonomy.json -- ./output/taxonomy.json
       
       - name: Diff report
         run:
