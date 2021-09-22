@@ -30,14 +30,12 @@ jobs:
         run: |
           TRACKING_PLAN=$(curl --location --request GET --header "Authorization: Bearer qYoH99T7RdYtTDC-QkfYMRw09K9pBHvf5B1ChKA8idY.44jsX0lb21czA4WKTbuzq1TQlGPqxWRLofEr90Fy4uc" --url "https://platform.segmentapis.com/v1beta/workspaces/segment-sa/tracking-plans/rs_1tj2LiXXBrOytuy4MiE4ZJjFm8b")
           echo $TRACKING_PLAN >> taxonomy.json 
-          echo '{"hello":"world"}' >> test.json
           mkdir -p output
           yes| cp -rf taxonomy.json ./output/
-          cp -rf test.json ./output/
       
       - name: Diff report
         run:
-          git diff origin/main -- ./output/
+          git diff --ignore-all-space origin/main -- ./output/
           
       - name: Commit/Push files in the output folder
         run: |
