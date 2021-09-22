@@ -34,8 +34,10 @@ jobs:
           yes| cp taxonomy.txt ./output/
       
       - name: Diff report
-        run:
-          git diff --ignore-all-space origin/main -- ./output/
+        run: |
+          LAST_UPDATE_API=$(grep -oP '(?<="update_time": )[^ ]*' ./output/taxonomy.json)
+          LAST_UPDATE_GH=$(grep -oP '(?<="update_time": )[^ ]*' main:./output/taxonomy.json)
+          LAST_UPDATE_API===LAST_UPDATE_GH
           
       - name: Commit/Push files in the output folder
         run: |
