@@ -36,6 +36,7 @@ jobs:
       - name: Diff report
         run: |
           LAST_UPDATE_API=$(grep -oP '(?<="update_time": )[^ ]*' ./output/taxonomy.json)
+          mkdir -p tmp
           yes| cp origin/main ./tmp/ 
           LAST_UPDATE_GH=$(grep -oP '(?<="update_time": )[^ ]*' ./tmp/taxonomy.json)
           LAST_UPDATE_API===LAST_UPDATE_GH
