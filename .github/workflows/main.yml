@@ -37,7 +37,7 @@ jobs:
         run: |
           LAST_UPDATE_API=$(grep -oP '(?<="update_time": )[^ ]*' ./output/taxonomy.json)
           LAST_UPDATE_GH=$(grep -oP '(?<="update_time": )[^ ]*' ${{github.workspace}}/output/taxonomy.json)
-          echo (LAST_UPDATE_API===LAST_UPDATE_GH)
+          echo $LAST_UPDATE_API $LAST_UPDATE_GH
           
       - name: Commit/Push files in the output folder
         run: |
