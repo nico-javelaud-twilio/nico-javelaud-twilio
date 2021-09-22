@@ -36,7 +36,7 @@ jobs:
       - name: Diff report
         run: |
           LAST_UPDATE_API=$(grep -oP '(?<="update_time": )[^ ]*' ./output/taxonomy.json)
-          echo $(github.workspace)
+          echo ${{github.workspace}}
           
       - name: Commit/Push files in the output folder
         run: |
