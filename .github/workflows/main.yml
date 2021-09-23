@@ -38,6 +38,7 @@ jobs:
             mkdir tmp
             TRACKING_PLAN=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "https://platform.segmentapis.com/v1beta/workspaces/segment-sa/tracking-plans/rs_1tj2LiXXBrOytuy4MiE4ZJjFm8b")
             echo $TRACKING_PLAN >> ./tmp/taxonomy.json 
+            echo $(fromJson($(cat ./tmp/taxonomy.json).update_time)
       
       - name: Diff report
         run: |
