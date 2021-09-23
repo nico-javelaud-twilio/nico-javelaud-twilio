@@ -25,6 +25,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      
+      - name: Initialize env variables
+        run: |
+          echo "TS_TAXONOMY=$(cat ./ts/taxonomy.txt)" >> $GITHUB_ENV
+          echo "TS_TAXONOMY_UI=$(cat ./ts/taxonomy_ui.txt)" >> $GITHUB_ENV
+          echo "TS_JSON_RULES=$(cat ./ts/json_rules.txt)" >> $GITHUB_ENV
+          echo "TS_LOOKUP_RULES=$(cat ./ts/lookup_rules.txt)" >> $GITHUB_ENV
         
       - name: Fetch taxonomy
         run: |
