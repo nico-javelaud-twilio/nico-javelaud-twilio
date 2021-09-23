@@ -33,6 +33,7 @@ jobs:
       
       - name: Diff report
         run: |
+          ls ${{ github.workspace }}
           LAST_UPDATE_API=$(grep -oP '(?<="update_time": )[^ ]*' ./output/taxonomy.json)
           LAST_UPDATE_GH=$(grep -oP '(?<="update_time": )[^ ]*' ${{github.workspace}}/output/taxonomy.json)
           echo "API: $LAST_UPDATE_API GH: $LAST_UPDATE_GH"
