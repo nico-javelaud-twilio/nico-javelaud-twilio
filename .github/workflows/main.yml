@@ -26,4 +26,4 @@ jobs:
       
       - name: Diff report
         run: |
-          ls ${{ github.repository }}
+          ls ${{ github.workspace }}
