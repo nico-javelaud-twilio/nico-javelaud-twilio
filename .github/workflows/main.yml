@@ -21,9 +21,18 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    
+
     steps:
       - uses: actions/checkout@v2
+        
+      - name: Fetch taxonomy
+        run: |
+            mkdir tmp
+            TRACKING_PLAN=$(curl --location --request GET --header "Authorization: Bearer qYoH99T7RdYtTDC-QkfYMRw09K9pBHvf5B1ChKA8idY.44jsX0lb21czA4WKTbuzq1TQlGPqxWRLofEr90Fy4uc" --url "https://platform.segmentapis.com/v1beta/workspaces/segment-sa/tracking-plans/rs_1tj2LiXXBrOytuy4MiE4ZJjFm8b")
+            echo $TRACKING_PLAN >> ./tmp/taxonomy.json 
       
       - name: Diff report
         run: |
-          ls ${{ github.workspace }}
+          cat ./tmp/taxonomy.json
+          cat ./output/taxonomy.json
