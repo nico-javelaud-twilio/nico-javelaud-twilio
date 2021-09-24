@@ -32,18 +32,18 @@ jobs:
       
       - name: Initialize env variables
         run: |
-          echo "TS_TAXONOMY_CORE=$(cat ./ts/taxonomy_core.txt)" >> $GITHUB_ENV
-          echo "TS_TAXONOMY_UPDATES=$(cat ./ts/taxonomy_updates.txt)" >> $GITHUB_ENV
-          echo "TS_JSON_RULES=$(cat ./ts/json_rules.txt)" >> $GITHUB_ENV
-          echo "TS_LOOKUP_RULES=$(cat ./ts/lookup_rules.txt)" >> $GITHUB_ENV
+          echo "TS_TAXONOMY_CORE=$(cat ./src/ts/taxonomy_core.txt)" >> $GITHUB_ENV
+          echo "TS_TAXONOMY_UPDATES=$(cat ./src/ts/taxonomy_updates.txt)" >> $GITHUB_ENV
+          echo "TS_JSON_RULES=$(cat ./src/ts/json_rules.txt)" >> $GITHUB_ENV
+          echo "TS_LOOKUP_RULES=$(cat ./src/ts/lookup_rules.txt)" >> $GITHUB_ENV
         
       - name: Check latest update timestamp for each asset
         run: |
             mkdir tmp
             
             LATEST_TAXONOMY_CORE=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_CORE_ID}}")
-            echo $LATEST_TAXONOMY_CORE >> ./tmp/taxonomy_core.json 
-            echo "LATEST_TS_TAXONOMY_CORE=$(cat ./tmp/taxonomy_core.json | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
+            echo $LATEST_TAXONOMY_CORE >> ./tmp/assets/taxonomy_core.json 
+            echo "LATEST_TS_TAXONOMY_CORE=$(cat ./tmp/assets/taxonomy_core.json | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
             
             LATEST_TAXONOMY_UPDATES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_UPDATES_ID}}")
             echo $LATEST_TAXONOMY_UPDATES >> ./tmp/taxonomy_updates.json 
@@ -51,12 +51,12 @@ jobs:
 
             
             LATEST_JSON_RULES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.JSON_RULES_ID}}")
-            echo $LATEST_JSON_RULES >> ./tmp/json_rules.json 
-            echo "LATEST_TS_JSON_RULES=$(cat ./tmp/json_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
+            echo $LATEST_JSON_RULES >> ./tmp/assets/json_rules.json 
+            echo "LATEST_TS_JSON_RULES=$(cat ./tmp/assets/json_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
             
             LATEST_LOOKUP_RULES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.LOOKUP_RULES_ID}}")
-            echo $LATEST_LOOKUP_RULES >> ./tmp/lookup_rules.json 
-            echo "LATEST_TS_LOOKUP_RULES=$(cat ./tmp/lookup_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
+            echo $LATEST_LOOKUP_RULES >> ./tmp/assets/lookup_rules.json 
+            echo "LATEST_TS_LOOKUP_RULES=$(cat ./tmp/assets/lookup_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
             
       - name: Update Taxonomy Core if needed
         if: ${{ env.LATEST_TS_TAXONOMY_CORE != env.TS_TAXONOMY_CORE }}
@@ -71,8 +71,8 @@ jobs:
       - name: Update JSON Rules if needed
         if: ${{ env.LATEST_TS_JSON_RULES != env.TS_JSON_RULES }}
         run: |
-          git add ./tmp/json_rules.json
-          git add ./ts/json_rules.json
+          cp ./tmp/assets/json_rules.json ./src/assets/json_rules.json
+          echo $LATEST_TS_JSON_RULES > ./src/ts/json_rules.txt
           echo "GIT_PUSH_REQUIRED=true" >> $GITHUB_ENV
           
       - name: Update Lookup Rules if needed
@@ -81,8 +81,10 @@ jobs:
           echo "Update LR"
           
       - name: Commit/Push files in the output folder
+        if: ${{ env.GIT_PUSH_REQUIRED == true }}
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
+          git add ./src/
           git commit -m "Update assets"
           git push
