@@ -21,7 +21,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     env:
-      BASE_URL: "https://api.segmentapis.com/"
+      BASE_URL: "https://api.segmentapis.com"
       TAXONOMY_CORE_ID: "tp_1wp3VoPyrRCNbl3lJT6PDUCi5rN"
       TAXONOMY_UPDATES_ID: "tp_1ybAXDkFHogu5SarT9gozVQYu6j"
       JSON_RULES_ID: "sfnc_hxdpUMFSYO"
