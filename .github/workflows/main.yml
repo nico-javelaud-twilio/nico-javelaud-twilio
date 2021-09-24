@@ -71,9 +71,18 @@ jobs:
       - name: Update JSON Rules if needed
         if: ${{ env.LATEST_TS_JSON_RULES != env.TS_JSON_RULES }}
         run: |
-          echo "Update JR"
+          git add ./tmp/json_rules.json
+          git add ./ts/json_rules.json
+          echo "GIT_PUSH_REQUIRED=true" >> $GITHUB_ENV
           
       - name: Update Lookup Rules if needed
         if: ${{ env.LATEST_TS_LOOKUP_RULES != env.TS_LOOKUP_RULES }}
         run: |
           echo "Update LR"
+          
+      - name: Commit/Push files in the output folder
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git commit -m "Update assets"
+          git push
