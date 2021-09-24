@@ -1,4 +1,4 @@
-# This is a basic workflow to help you get started with Actions
+ # This is a basic workflow to help you get started with Actions
 
 name: Pull assets
 
@@ -43,24 +43,20 @@ jobs:
             
             LATEST_TAXONOMY_CORE=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_CORE_ID}}")
             echo $LATEST_TAXONOMY_CORE >> ./tmp/taxonomy_core.json 
-            LATEST_TS_TAXONOMY_CORE=$(cat ./tmp/taxonomy_core.json | jq '.data.trackingPlan.updatedAt')
-            if [ LATEST_TS_TAXONOMY_CORE != TS_TAXONOMY_CORE]; then echo "TAXONOMY_CORE_SYNC=true" >> $GITHUB_ENV fi
+            echo "LATEST_TS_TAXONOMY_CORE=$(cat ./tmp/taxonomy_core.json | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
             
             LATEST_TAXONOMY_UPDATES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_UPDATES_ID}}")
             echo $LATEST_TAXONOMY_UPDATES >> ./tmp/taxonomy_updates.json 
-            LATEST_TS_TAXONOMY_UPDATES=$(cat ./tmp/taxonomy_updates.json | jq '.data.trackingPlan.updatedAt')
-            if [ LATEST_TS_TAXONOMY_UPDATES != TS_TAXONOMY_UPDATES]; then echo "TAXONOMY_UPDATES_SYNC=true" >> $GITHUB_ENV fi
+            echo "LATEST_TS_TAXONOMY_UPDATES=$(cat ./tmp/taxonomy_updates.json | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
 
             
             LATEST_JSON_RULES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.JSON_RULES_ID}}")
             echo $LATEST_JSON_RULES >> ./tmp/json_rules.json 
-            LATEST_TS_JSON_RULES=$(cat ./tmp/json_rules.json | jq '.data.function.deployedAt')
-            if [ LATEST_TS_JSON_RULES != TS_JSON_RULES]; then echo "JSON_RULES_SYNC=true" >> $GITHUB_ENV fi
+            echo "LATEST_TS_JSON_RULES=$(cat ./tmp/json_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
             
             LATEST_LOOKUP_RULES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.LOOKUP_RULES_ID}}")
             echo $LATEST_LOOKUP_RULES >> ./tmp/lookup_rules.json 
-            LATEST_TS_LOOKUP_RULES=$(cat ./tmp/lookup_rules.json | jq '.data.function.deployedAt')
-            if [ LATEST_TS_LOOKUP_RULES != TS_LOOKUP_RULES]; then echo "LOOKUP_RULES_SYNC=true" >> $GITHUB_ENV fi
+            echo "LATEST_TS_LOOKUP_RULES=$(cat ./tmp/lookup_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
             
       - name: Diff report
         run: |
