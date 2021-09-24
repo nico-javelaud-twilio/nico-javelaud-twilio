@@ -42,18 +42,22 @@ jobs:
             mkdir tmp
             
             LATEST_TS_TAXONOMY_CORE=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_CORE_ID}}")
+            echo $LATEST_TS_TAXONOMY_CORE
             echo $LATEST_TS_TAXONOMY_CORE >> ./tmp/taxonomy_core.json 
             echo $(cat ./tmp/taxonomy_core.json | jq '.updatedAt')
             
             LATEST_TS_TAXONOMY_UPDATES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_UPDATES_ID}}")
+            echo $LATEST_TS_TAXONOMY_UPDATES
             echo $LATEST_TS_TAXONOMY_UPDATES >> ./tmp/taxonomy_updates.json 
             echo $(cat ./tmp/taxonomy_updates.json | jq '.updatedAt')
             
             LATEST_TS_JSON_RULES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.JSON_RULES_ID}}")
+            echo $LATEST_TS_JSON_RULES
             echo $LATEST_TS_JSON_RULES >> ./tmp/json_rules.json 
             echo $(cat ./tmp/json_rules.json | jq '.deployedAt')
             
             LATEST_TS_LOOKUP_RULES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.LOOKUP_RULES_ID}}")
+            echo $LATEST_TS_LOOKUP_RULES
             echo $LATEST_TS_LOOKUP_RULES >> ./tmp/lookup_rules.json 
             echo $(cat ./tmp/lookup_rules.json | jq '.deployedAt')
       
