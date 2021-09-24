@@ -40,6 +40,8 @@ jobs:
       - name: Check latest update timestamp for each asset
         run: |
             mkdir tmp
+            mkdir tmp/ts
+            mkdir tmp/assets
             
             LATEST_TAXONOMY_CORE=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_CORE_ID}}")
             echo $LATEST_TAXONOMY_CORE >> ./tmp/assets/taxonomy_core.json 
