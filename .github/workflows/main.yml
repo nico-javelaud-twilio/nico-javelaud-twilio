@@ -75,17 +75,17 @@ jobs:
         run: |
           cp ./tmp/assets/json_rules.json ./src/assets/json_rules.json
           echo $LATEST_TS_JSON_RULES > ./src/ts/json_rules.txt
-          echo "GIT_PUSH_REQUIRED=$(true)" >> $GITHUB_ENV
+          echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Update Lookup Rules if needed
         if: ${{ env.LATEST_TS_LOOKUP_RULES != env.TS_LOOKUP_RULES }}
         run: |
           cp ./tmp/assets/lookup_rules.json ./src/assets/lookup_rules.json
           echo $LATEST_TS_LOOKUP__RULES > ./src/ts/lookup_rules.txt
-          echo "GIT_PUSH_REQUIRED=$(true)" >> $GITHUB_ENV
+          echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Commit/Push files in the output folder
-        if: ${{ env.GIT_PUSH_REQUIRED == true }}
+        if: ${{ env.GIT_PUSH_REQUIRED == 1 }}
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
