@@ -58,7 +58,22 @@ jobs:
             echo $LATEST_LOOKUP_RULES >> ./tmp/lookup_rules.json 
             echo "LATEST_TS_LOOKUP_RULES=$(cat ./tmp/lookup_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
             
-      - name: Diff report
+      - name: Update Taxonomy Core if needed
+        if: ${{ env.LATEST_TS_TAXONOMY_CORE != env.TS_TAXONOMY_CORE }}
         run: |
-          cat ./tmp/taxonomy.json
-          cat ./output/taxonomy.json
+          echo "Update TC"
+          
+      - name: Update Taxonomy Updates if needed
+        if: ${{ env.LATEST_TS_TAXONOMY_UPDATES != env.TS_TAXONOMY_UPDATES }}
+        run: |
+          echo "Update TU"
+          
+      - name: Update JSON Rules if needed
+        if: ${{ env.LATEST_TS_JSON_RULES != env.TS_JSON_RULES }}
+        run: |
+          echo "Update JR"
+          
+      - name: Update Lookup Rules if needed
+        if: ${{ env.LATEST_TS_LOOKUP_RULES != env.TS_LOOKUP_RULES }}
+        run: |
+          echo "Update LR"
