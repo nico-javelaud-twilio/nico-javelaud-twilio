@@ -80,7 +80,9 @@ jobs:
       - name: Update Lookup Rules if needed
         if: ${{ env.LATEST_TS_LOOKUP_RULES != env.TS_LOOKUP_RULES }}
         run: |
-          echo "Update LR"
+          cp ./tmp/assets/lookup_rules.json ./src/assets/lookup_rules.json
+          echo $LATEST_TS_LOOKUP__RULES > ./src/ts/lookup_rules.txt
+          echo "GIT_PUSH_REQUIRED=true" >> $GITHUB_ENV
           
       - name: Commit/Push files in the output folder
         if: ${{ env.GIT_PUSH_REQUIRED == true }}
