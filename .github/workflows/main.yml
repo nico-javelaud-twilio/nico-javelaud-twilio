@@ -80,7 +80,10 @@ jobs:
               ((COUNTER+=1))
           done
 
-          echo $(jq -s '{ data: { rules: map(.data.rules[]) }}' $LIST_FILENAMES)
+          echo $(jq -s '{ data: { rules: map(.data.rules[]) }}' $LIST_FILENAMES) >> ./tmp/assets/taxonomy_core.json 
+          cp ./tmp/assets/taxonomy_core.json ./src/assets/taxonomy_core.json
+          echo $LATEST_TS_TAXONOMY_CORE > ./src/ts/taxonomy_core.txt
+          echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Update Taxonomy Updates if needed
         if: ${{ env.LATEST_TS_TAXONOMY_UPDATES != env.TS_TAXONOMY_UPDATES }}
