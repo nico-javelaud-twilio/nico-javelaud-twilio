@@ -55,7 +55,32 @@ jobs:
       - name: Update Taxonomy Core if needed
         if: ${{ env.LATEST_TS_TAXONOMY_CORE != env.TS_TAXONOMY_CORE }}
         run: |
-          echo "Update TC"
+          COUNTER=1
+          NEXT_PAGE_EXISTS=true
+          FULL_CURSOR=""
+          LIST_FILENAMES=""
+
+          until [ $NEXT_PAGE_EXISTS == false ]
+          do
+              echo i: $COUNTER
+              TAXONOMY_CORE_RULES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_CORE_ID}}/rules?pagination.count=200&$FULL_CURSOR")
+              RULES_COUNT_IN_RESPONSE=$(echo $TAXONOMY_CORE_RULES | jq '.data.rules | length')
+              echo "COUNT "$RULES_COUNT_IN_RESPONSE
+              if [ $RULES_COUNT_IN_RESPONSE -gt 0 ];
+              then
+                  TMP_RULES=$(echo $TAXONOMY_CORE_RULES | jq '.data.rules')
+                  echo $TAXONOMY_CORE_RULES >> ./tmp/assets/taxonomy_core_rules_$COUNTER.json
+                  CURSOR=$(echo $TAXONOMY_CORE_RULES | jq -r '.data.pagination.next')
+                  FULL_CURSOR="&pagination.cursor=$CURSOR"
+                  LIST_FILENAMES+=" ./tmp/assets/taxonomy_core_rules_$COUNTER.json"
+              else
+                  NEXT_PAGE_EXISTS=false
+              fi
+
+              ((COUNTER+=1))
+          done
+
+          echo $(jq -s '{ data: { rules: map(.data.rules[]) }}' $LIST_FILENAMES)
           
       - name: Update Taxonomy Updates if needed
         if: ${{ env.LATEST_TS_TAXONOMY_UPDATES != env.TS_TAXONOMY_UPDATES }}
