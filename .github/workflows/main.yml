@@ -85,7 +85,32 @@ jobs:
       - name: Update Taxonomy Updates if needed
         if: ${{ env.LATEST_TS_TAXONOMY_UPDATES != env.TS_TAXONOMY_UPDATES }}
         run: |
-          echo "Update TU"
+          COUNTER=1
+          NEXT_PAGE_EXISTS=true
+          FULL_CURSOR=""
+          LIST_FILENAMES=""
+          until [ $NEXT_PAGE_EXISTS == false ]
+          do
+              echo i: $COUNTER
+              TAXONOMY_UPDATES_RULES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_UPDATES_ID}}/rules?pagination.count=1&$FULL_CURSOR")
+              RULES_COUNT_IN_RESPONSE=$(echo $TAXONOMY_UPDATES_RULES | jq '.data.rules | length')
+              echo "COUNT "$RULES_COUNT_IN_RESPONSE
+              if [ $RULES_COUNT_IN_RESPONSE -gt 0 ];
+              then
+                  TMP_RULES=$(echo $TAXONOMY_UPDATES_RULES | jq '.data.rules')
+                  echo $TAXONOMY_UPDATES_RULES > ./tmp/assets/taxonomy_update_rules_$COUNTER.json
+                  CURSOR=$(echo $TAXONOMY_UPDATES_RULES | jq -r '.data.pagination.next')
+                  FULL_CURSOR="&pagination.cursor=$CURSOR"
+                  LIST_FILENAMES+=" ./tmp/assets/taxonomy_update_rules_$COUNTER.json"
+              else
+                  NEXT_PAGE_EXISTS=false
+              fi
+              ((COUNTER+=1))
+          done
+          echo $(jq -s '{ data: { rules: map(.data.rules[]) }}' $LIST_FILENAMES) > ./tmp/assets/taxonomy_update.json 
+          cp ./tmp/assets/taxonomy_update.json ./src/assets/taxonomy_update.json
+          echo $LATEST_TS_TAXONOMY_UPDATES > ./src/ts/taxonomy_update.txt
+          echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Update JSON Rules if needed
         if: ${{ env.LATEST_TS_JSON_RULES != env.TS_JSON_RULES }}
