@@ -36,20 +36,20 @@ jobs:
             mkdir tmp/assets
             
             LATEST_TAXONOMY_CORE=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_CORE_ID}}")
-            echo $LATEST_TAXONOMY_CORE >> ./tmp/assets/taxonomy_core.json 
+            echo $LATEST_TAXONOMY_CORE > ./tmp/assets/taxonomy_core.json 
             echo "LATEST_TS_TAXONOMY_CORE=$(cat ./tmp/assets/taxonomy_core.json | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
             
             LATEST_TAXONOMY_UPDATES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_UPDATES_ID}}")
-            echo $LATEST_TAXONOMY_UPDATES >> ./tmp/taxonomy_updates.json 
+            echo $LATEST_TAXONOMY_UPDATES > ./tmp/taxonomy_updates.json 
             echo "LATEST_TS_TAXONOMY_UPDATES=$(cat ./tmp/taxonomy_updates.json | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
 
             
             LATEST_JSON_RULES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.JSON_RULES_ID}}")
-            echo $LATEST_JSON_RULES >> ./tmp/assets/json_rules.json 
+            echo $LATEST_JSON_RULES > ./tmp/assets/json_rules.json 
             echo "LATEST_TS_JSON_RULES=$(cat ./tmp/assets/json_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
             
             LATEST_LOOKUP_RULES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.LOOKUP_RULES_ID}}")
-            echo $LATEST_LOOKUP_RULES >> ./tmp/assets/lookup_rules.json 
+            echo $LATEST_LOOKUP_RULES > ./tmp/assets/lookup_rules.json 
             echo "LATEST_TS_LOOKUP_RULES=$(cat ./tmp/assets/lookup_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
             
       - name: Update Taxonomy Core if needed
@@ -69,7 +69,7 @@ jobs:
               if [ $RULES_COUNT_IN_RESPONSE -gt 0 ];
               then
                   TMP_RULES=$(echo $TAXONOMY_CORE_RULES | jq '.data.rules')
-                  echo $TAXONOMY_CORE_RULES >> ./tmp/assets/taxonomy_core_rules_$COUNTER.json
+                  echo $TAXONOMY_CORE_RULES > ./tmp/assets/taxonomy_core_rules_$COUNTER.json
                   CURSOR=$(echo $TAXONOMY_CORE_RULES | jq -r '.data.pagination.next')
                   FULL_CURSOR="&pagination.cursor=$CURSOR"
                   LIST_FILENAMES+=" ./tmp/assets/taxonomy_core_rules_$COUNTER.json"
@@ -80,7 +80,7 @@ jobs:
               ((COUNTER+=1))
           done
 
-          echo $(jq -s '{ data: { rules: map(.data.rules[]) }}' $LIST_FILENAMES) >> ./tmp/assets/taxonomy_core.json 
+          echo $(jq -s '{ data: { rules: map(.data.rules[]) }}' $LIST_FILENAMES) > ./tmp/assets/taxonomy_core.json 
           cp ./tmp/assets/taxonomy_core.json ./src/assets/taxonomy_core.json
           echo $LATEST_TS_TAXONOMY_CORE > ./src/ts/taxonomy_core.txt
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
