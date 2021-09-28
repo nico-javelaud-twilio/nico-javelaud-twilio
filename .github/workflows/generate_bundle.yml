@@ -35,7 +35,7 @@ jobs:
         run: |
           echo "TAXONOMY_CORE=$(cat ./src/assets/taxonomy_core.json)" >> $GITHUB_ENV
           echo "TAXONOMY_UPDATES=$(cat ./src/assets/taxonomy_updates.json)" >> $GITHUB_ENV
-          echo "JSON_RULES=$(cat ./src/assets/json_rules.json | jq '.data.function.code')" >> $GITHUB_ENV
-          echo "LOOKUP_RULES=$(cat ./src/assets/lookup_rules.json | jq '.data.function.code')" >> $GITHUB_ENV
+          echo "JSON_RULES=$(cat ./src/assets/json_rules.json | jq '.data.function.id')" >> $GITHUB_ENV
+          echo "LOOKUP_RULES=$(cat ./src/assets/lookup_rules.json | jq '.data.function.id')" >> $GITHUB_ENV
           
           echo $JSON_RULES
