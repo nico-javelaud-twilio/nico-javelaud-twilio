@@ -37,4 +37,5 @@ jobs:
           TAXONOMY_UPDATES=$(cat ./src/assets/taxonomy_updates.json)
           JSON_RULES=$(cat ./src/assets/json_rules.json | jq '.data.function.code')
           LOOKUP_RULES=$(cat ./src/assets/lookup_rules.json | jq '.data.function.code')
-          echo $JSON_RULES
+          
+          echo $(cat << EOF $JSON_RULES EOF)
