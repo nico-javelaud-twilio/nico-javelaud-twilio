@@ -39,3 +39,12 @@ jobs:
           LOOKUP_RULES=$(cat ./src/assets/lookup_rules.json | jq '.data.function.code')
           
           echo "(()=>{const j=$JSON_RULES;const l=$LOOKUP_RULES;const t=$TAXONOMY_CORE;const u=$TAXONOMY_UPDATES})();"
+          
+      - name: Failed curl
+        run: |
+          L=$(curl --fail --location --request GET  --url "https://httpstat.us/201" || { exit 1;})
+          echo "TEST= echo $L" >> $GITHUB_ENV
+      
+      - name: Test
+        if: ${{ env.TEST }}
+        run: echo "BING!"
