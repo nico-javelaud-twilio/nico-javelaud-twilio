@@ -125,7 +125,7 @@ jobs:
         if: ${{ env.LATEST_TS_LOOKUP_RULES != env.TS_LOOKUP_RULES }}
         run: |
           cp ./tmp/assets/lookup_rules.json ./src/assets/lookup_rules.json
-          echo $LATEST_TS_LOOKUP__RULES > ./src/ts/lookup_rules.txt
+          echo $LATEST_TS_LOOKUP_RULES > ./src/ts/lookup_rules.txt
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Commit/Push files in the output folder
