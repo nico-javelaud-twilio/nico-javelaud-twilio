@@ -62,7 +62,7 @@ jobs:
           until [ $NEXT_PAGE_EXISTS == false ]
           do
               echo i: $COUNTER
-              TAXONOMY_CORE_RULES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_CORE_ID}}/rules?pagination.count=200&$FULL_CURSOR")
+              TAXONOMY_CORE_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_CORE_ID}}/rules?pagination.count=200&$FULL_CURSOR" || { exit 1;})
               RULES_COUNT_IN_RESPONSE=$(echo $TAXONOMY_CORE_RULES | jq '.data.rules | length')
               echo "COUNT "$RULES_COUNT_IN_RESPONSE
               if [ $RULES_COUNT_IN_RESPONSE -gt 0 ];
@@ -94,7 +94,7 @@ jobs:
           until [ $NEXT_PAGE_EXISTS == false ]
           do
               echo i: $COUNTER
-              TAXONOMY_UPDATES_RULES=$(curl --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_UPDATES_ID}}/rules?pagination.count=200&$FULL_CURSOR")
+              TAXONOMY_UPDATES_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_UPDATES_ID}}/rules?pagination.count=200&$FULL_CURSOR" || { exit 1;})
               RULES_COUNT_IN_RESPONSE=$(echo $TAXONOMY_UPDATES_RULES | jq '.data.rules | length')
               echo "COUNT "$RULES_COUNT_IN_RESPONSE
               if [ $RULES_COUNT_IN_RESPONSE -gt 0 ];
