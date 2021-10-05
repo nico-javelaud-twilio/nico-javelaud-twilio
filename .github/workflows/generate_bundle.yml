@@ -42,7 +42,7 @@ jobs:
           
       - name: Failed curl
         run: |
-          L=$(curl --fail --location --request GET  --url "https://httpstat.us/201" || { exit 1;})
+          L=$(curl --fail --location --request GET  --url "https://httpstat.us/401" || { exit 1;})
           echo "TEST= echo $L" >> $GITHUB_ENV
       
       - name: Test
