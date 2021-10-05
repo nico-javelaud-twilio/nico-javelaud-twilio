@@ -40,7 +40,7 @@ jobs:
             LATEST_TAXONOMY_CORE=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_CORE_ID}}" || { exit 1;})
             echo "LATEST_TS_TAXONOMY_CORE=$(echo $LATEST_TAXONOMY_CORE | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
             
-            LATEST_TAXONOMY_UPDATES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_UPDATES_ID}}" || { exit 1;})
+            LATEST_TAXONOMY_UPDATES=$(curl --fail --location --request GET --header "Authorization: Bearer FAIL" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_UPDATES_ID}}" || { exit 1;})
             echo "LATEST_TS_TAXONOMY_UPDATES=$(echo $LATEST_TAXONOMY_UPDATES | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
             
             LATEST_JSON_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.JSON_RULES_ID}}" || { exit 1;})
