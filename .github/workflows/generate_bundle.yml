@@ -35,16 +35,7 @@ jobs:
         run: |
           TAXONOMY_CORE=$(cat ./src/assets/taxonomy_core.json)
           TAXONOMY_UPDATES=$(cat ./src/assets/taxonomy_updates.json)
-          JSON_RULES=$(cat ./src/assets/json_rules.json | jq '.data.function.code')
+          JSON_RULES=$(cat ./src/assets/json_rules.json | jq '{"functionId":"${{env.JSON_RULES_ID}}","code":.data.function.code}')
           LOOKUP_RULES=$(cat ./src/assets/lookup_rules.json | jq '.data.function.code')
           
-          echo "(()=>{const j=$JSON_RULES;const l=$LOOKUP_RULES;const t=$TAXONOMY_CORE;const u=$TAXONOMY_UPDATES})();"
-          
-      - name: Failed curl
-        run: |
-          L=$(curl --fail --location --request GET  --url "https://httpstat.us/401" || { exit 1;})
-          echo "TEST= echo $L" >> $GITHUB_ENV
-      
-      - name: Test
-        if: ${{ env.TEST }}
-        run: echo "BING!"
+          echo $JSON_RULES
