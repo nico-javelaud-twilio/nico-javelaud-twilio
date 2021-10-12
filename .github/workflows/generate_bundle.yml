@@ -39,14 +39,14 @@ jobs:
           echo "LOOKUP_RULES=$(cat ./src/deploy/lookup_rules)" >> $GITHUB_ENV
           
       - name: Update Static Rules if needed
-        if: ${{ env.JSON_RULES == "1" }}
+        if: ${{ env.JSON_RULES == '"1"' }}
         run: |
           (curl --fail --location --request PATCH '${{env.BASE_URL}}/sources/${{env.CORE_INGESTION_FUNCTION_ID}}' --header 'Authorization: Bearer ${{secrets.ACCESS_TOKEN}}' --header 'Content-Type: application/json' -d @./src/assets/json_rules.json  || { exit 1;})
           echo "0" > ./src/deploy/json_rules
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Update Lookup Rules if needed
-        if: ${{ env.LOOKUP_RULES == "1" }}
+        if: ${{ env.LOOKUP_RULES == '"1"' }}
         run: |
           (curl --fail --location --request PATCH '${{env.BASE_URL}}/sources/${{env.CORE_INGESTION_FUNCTION_ID}}' --header 'Authorization: Bearer ${{secrets.ACCESS_TOKEN}}' --header 'Content-Type: application/json' -d @./src/assets/lookup_rules.json  || { exit 1;})
           echo "0" > ./src/deploy/lookup_rules
