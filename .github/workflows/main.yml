@@ -150,7 +150,8 @@ jobs:
         if: ${{ env.GIT_PUSH_REQUIRED == 1 }}
         run: |
           LIBRARY=$(jq -s 'reduce .[] as $item({}; . * $item)' ./src/assets/taxonomy_core.json ./src/assets/taxonomy_updates.json ./src/assets/json_rules.json ./src/assets/lookup_rules.json)
-          FUNCTION="code"
+          FUNCTION="{}"
           jq '{functionId: "\(.fn_id)", code: "const library=\(.library);\(.base)"}' <<EOF
-          {"fn_id":"abc","library": $LIBRARY, "base": $FUNCTION}
+          {"fn_id":"abc","library": $LIBRARY, "base": "$FUNCTION"}
           EOF
+
