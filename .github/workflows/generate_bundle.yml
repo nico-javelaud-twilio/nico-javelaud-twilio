@@ -24,7 +24,7 @@ jobs:
       JSON_RULES_ID: "sfnc_hxdpUMFSYO"
       LOOKUP_RULES_ID: "sfnc_TNhNLzGwpl"
       CODE_BASE_ID: ""
-      CORE_INGESTION_FUNTCION_ID: ""
+      CORE_INGESTION_FUNCTION_ID: "dkZptWMBoYqtawTMcY8RK4"
       
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -33,9 +33,30 @@ jobs:
       
       - name: Initialize env variables
         run: |
-          TAXONOMY_CORE=$(cat ./src/assets/taxonomy_core.json)
-          TAXONOMY_UPDATES=$(cat ./src/assets/taxonomy_updates.json)
-          JSON_RULES=$(cat ./src/assets/json_rules.json | jq '{"functionId":"${{env.JSON_RULES_ID}}","code":.data.function.code}')
-          LOOKUP_RULES=$(cat ./src/assets/lookup_rules.json | jq '.data.function.code')
+          echo "TAXONOMY_CORE=$(cat ./src/deploy/taxonomy_core)" >> $GITHUB_ENV
+          echo "TAXONOMY_UPDATES=$(cat ./src/deploy/taxonomy_updates)" >> $GITHUB_ENV
+          echo "JSON_RULES=$(cat ./src/deploy/json_rules)" >> $GITHUB_ENV
+          echo "LOOKUP_RULES=$(cat ./src/deploy/lookup_rules)" >> $GITHUB_ENV
           
-          echo $JSON_RULES
+      - name: Update Static Rules if needed
+        if: ${{ env.JSON_RULES == "1" }}
+        run: |
+          (curl --fail --location --request PATCH '${{env.BASE_URL}}/sources/${{env.CORE_INGESTION_FUNCTION_ID}}' --header 'Authorization: Bearer ${{secrets.ACCESS_TOKEN}}' --header 'Content-Type: application/json' -d @./src/assets/json_rules.json  || { exit 1;})
+          echo "0" > ./src/deploy/json_rules
+          echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
+          
+      - name: Update Lookup Rules if needed
+        if: ${{ env.LOOKUP_RULES == "1" }}
+        run: |
+          (curl --fail --location --request PATCH '${{env.BASE_URL}}/sources/${{env.CORE_INGESTION_FUNCTION_ID}}' --header 'Authorization: Bearer ${{secrets.ACCESS_TOKEN}}' --header 'Content-Type: application/json' -d @./src/assets/lookup_rules.json  || { exit 1;})
+          echo "0" > ./src/deploy/lookup_rules
+          echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
+          
+      - name: Commit/Push files in the output folder
+        if: ${{ env.GIT_PUSH_REQUIRED == 1 }}
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add ./src/
+          git commit -m "Deployed assets"
+          git push
