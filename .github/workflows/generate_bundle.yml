@@ -38,6 +38,13 @@ jobs:
           echo "JSON_RULES=$(cat ./src/deploy/json_rules)" >> $GITHUB_ENV
           echo "LOOKUP_RULES=$(cat ./src/deploy/lookup_rules)" >> $GITHUB_ENV
           
+      - name: Print env variables
+        run: |
+          echo ${{env.TAXONOMY_CORE}}
+          echo ${{env.TAXONOMY_UPDATES}}
+          echo ${{env.JSON_RULES}}
+          echo ${{env.LOOKUP_RULES}}
+          
       - name: Update Static Rules if needed
         if: ${{ env.JSON_RULES == '"1"' }}
         run: |
