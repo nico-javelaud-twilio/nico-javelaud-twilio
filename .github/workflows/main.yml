@@ -82,6 +82,7 @@ jobs:
           echo $(jq -s '{ data: { rules: map(.data.rules[]) }}' $LIST_FILENAMES) > ./tmp/assets/taxonomy_core.json 
           cp ./tmp/assets/taxonomy_core.json ./src/assets/taxonomy_core.json
           echo $LATEST_TS_TAXONOMY_CORE > ./src/ts/taxonomy_core.txt
+          echo "1" > ./src/deploy/taxonomy_core
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Update Taxonomy Updates if needed
@@ -112,6 +113,7 @@ jobs:
           echo $(jq -s '{ data: { rules: map(.data.rules[]) }}' $LIST_FILENAMES) > ./tmp/assets/taxonomy_updates.json 
           cp ./tmp/assets/taxonomy_updates.json ./src/assets/taxonomy_updates.json
           echo $LATEST_TS_TAXONOMY_UPDATES > ./src/ts/taxonomy_updates.txt
+          echo "1" > ./src/deploy/taxonomy_update
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Update JSON Rules if needed
@@ -119,6 +121,7 @@ jobs:
         run: |
           cp ./tmp/assets/json_rules.json ./src/assets/json_rules.json
           echo $LATEST_TS_JSON_RULES > ./src/ts/json_rules.txt
+          echo "1" > ./src/deploy/json_rules
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Update Lookup Rules if needed
@@ -126,6 +129,7 @@ jobs:
         run: |
           cp ./tmp/assets/lookup_rules.json ./src/assets/lookup_rules.json
           echo $LATEST_TS_LOOKUP_RULES > ./src/ts/lookup_rules.txt
+          echo "1" > ./src/deploy/lookup_rules
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Commit/Push files in the output folder
