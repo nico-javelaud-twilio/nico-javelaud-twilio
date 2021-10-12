@@ -49,12 +49,12 @@ jobs:
             LATEST_JSON_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.JSON_RULES_ID}}" || { exit 1;})
             echo $LATEST_JSON_RULES > ./tmp/raw/json_rules.json 
             echo "LATEST_TS_JSON_RULES=$(cat ./tmp/raw/json_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
-            (echo $LATEST_JSON_RULES | jq '{"sourceId":"${{env.CORE_INGESTION_FUNCTION_ID}}","settings":{"staticRules":.data.function.code}}') > ./tmp/assets/json_rules.json            
+            (echo $LATEST_JSON_RULES | jq '{"staticRules":.data.function.code}') > ./tmp/assets/json_rules.json            
             
             LATEST_LOOKUP_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.LOOKUP_RULES_ID}}" || { exit 1;})
             echo $LATEST_LOOKUP_RULES > ./tmp/raw/lookup_rules.json 
             echo "LATEST_TS_LOOKUP_RULES=$(cat ./tmp/raw/lookup_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
-            (echo $LATEST_LOOKUP_RULES | jq '{"sourceId":"${{env.CORE_INGESTION_FUNCTION_ID}}","settings":{"lookupRules":.data.function.code}}') > ./tmp/assets/lookup_rules.json
+            (echo $LATEST_LOOKUP_RULES | jq '{"lookupRules":.data.function.code}') > ./tmp/assets/lookup_rules.json
             
       - name: Update Taxonomy Core if needed
         if: ${{ env.LATEST_TS_TAXONOMY_CORE != env.TS_TAXONOMY_CORE }}
@@ -145,3 +145,16 @@ jobs:
           git add ./src/
           git commit -m "Update assets"
           git push
+      
+      - name: Bundle code and Deploy to Segemnt
+        if: ${{ env.GIT_PUSH_REQUIRED == 1 }}
+        run: |
+          JSON_STRING=$( jq -n \
+            --arg taxonomy_config "$clear
+            " \
+            --arg taxonomy_business "$OBJECT_NAME" \
+            --arg static_rules "$BUCKET_NAME" \
+            --arg lookup_rules "$OBJECT_NAME" \
+            --arg code_base "$TARGET_LOCATION" \
+            '{"functionId": "${{env.CORE_INGESTION_FUNCTION_ID}}", "code": "{}"' )
+       
