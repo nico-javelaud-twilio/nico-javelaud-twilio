@@ -23,7 +23,7 @@ jobs:
       TAXONOMY_UPDATES_ID: "tp_1ybAXDkFHogu5SarT9gozVQYu6j"
       JSON_RULES_ID: "sfnc_hxdpUMFSYO"
       LOOKUP_RULES_ID: "sfnc_TNhNLzGwpl"
-      CODE_BASE_ID: ""
+      CODE_BASE_ID: "id"
       CORE_INGESTION_FUNCTION_ID: "dkZptWMBoYqtawTMcY8RK4"
       
     # Steps represent a sequence of tasks that will be executed as part of the job
