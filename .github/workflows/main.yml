@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BASE_URL: "https://api.segmentapis.com"
-      CONFIG_TAXONOMY_ID: "tp_1wp3VoPyrRCNbl3lJT6PDUCi5rN"
+      CONFIG_TAXONOMY_ID: "tp_1zSCBI8im56lQdrSmhplZJKfUzj"
       BUSINESS_TAXONOMY_ID: "tp_1ybAXDkFHogu5SarT9gozVQYu6j"
       STATIC_RULES_ID: "sfnc_hxdpUMFSYO"
       LOOKUP_RULES_ID: "sfnc_TNhNLzGwpl"
