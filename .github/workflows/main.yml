@@ -131,7 +131,7 @@ jobs:
         if: ${{ env.LATEST_TS_STATIC_RULES != env.TS_STATIC_RULES }}
         run: |
           cp ./tmp/assets/static_rules.json ./src/assets/static_rules.json
-          echo $LATEST_TS_STATIC_RULES > ./src/ts/json_rules.txt
+          echo $LATEST_TS_STATIC_RULES > ./src/ts/static_rules.txt
           #echo "1" > ./src/deploy/json_rules
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
