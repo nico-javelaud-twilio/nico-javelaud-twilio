@@ -47,7 +47,7 @@ jobs:
             LATEST_BUSINESS_TAXONOMY=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.BUSINESS_TAXONOMY_ID}}" || { exit 1;})
             echo "LATEST_TS_BUSINESS_TAXONOMY=$(echo $LATEST_BUSINESS_TAXONOMY | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
             
-            LATEST_STATIC_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.JSON_RULES_ID}}" || { exit 1;})
+            LATEST_STATIC_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.STATIC_RULES_ID}}" || { exit 1;})
             echo $LATEST_STATIC_RULES > ./tmp/raw/static_rules.json 
             echo "LATEST_TS_STATIC_RULES=$(cat ./tmp/raw/static_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
             (echo $LATEST_STATIC_RULES | jq '{staticRules:.data.function.code}') > ./tmp/assets/static_rules.json            
