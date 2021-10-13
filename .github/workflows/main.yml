@@ -151,7 +151,8 @@ jobs:
           #echo "1" > ./src/deploy/code_base
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
-      - name: Bundle code and Deploy to Segemnt
+      - name: Bundle code and Deploy to Segment
+        if: ${{ env.GIT_PUSH_REQUIRED == 1 }}
         run: |
           LIBRARY=$(jq -s 'reduce .[] as $item({}; . * $item)' ./src/assets/config_taxonomy.json ./src/assets/business_taxonomy.json ./src/assets/static_rules.json ./src/assets/lookup_rules.json)
           FUNCTION_RAW=$(jq '.code' ./src/assets/code_base.json)
