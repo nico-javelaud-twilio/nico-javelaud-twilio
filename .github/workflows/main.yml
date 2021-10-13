@@ -93,7 +93,7 @@ jobs:
           echo $(jq -s '{ configTaxonomy: map(.data.rules[]) }' $LIST_FILENAMES) > ./tmp/assets/config_taxonomy.json 
           cp ./tmp/assets/config_taxonomy.json ./src/assets/config_taxonomy.json
           echo $LATEST_TS_CONFIG_TAXONOMY > ./src/ts/config_taxonomy.txt
-          echo "1" > ./src/deploy/config_taxonomy
+          #echo "1" > ./src/deploy/config_taxonomy
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Update Business Taxonomy if needed
@@ -124,7 +124,7 @@ jobs:
           echo $(jq -s '{ businessTaxonomy: map(.data.rules[]|tostring) }' $LIST_FILENAMES) > ./tmp/assets/business_taxonomy.json 
           cp ./tmp/assets/business_taxonomy.json ./src/assets/business_taxonomy.json
           echo $LATEST_TS_BUSINESS_TAXONOMY > ./src/ts/business_taxonomy.txt
-          echo "1" > ./src/deploy/business_taxonomy
+          #echo "1" > ./src/deploy/business_taxonomy
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Update Static Rules if needed
@@ -132,7 +132,7 @@ jobs:
         run: |
           cp ./tmp/assets/static_rules.json ./src/assets/static_rules.json
           echo $LATEST_TS_STATIC_RULES > ./src/ts/json_rules.txt
-          echo "1" > ./src/deploy/json_rules
+          #echo "1" > ./src/deploy/json_rules
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Update Lookup Rules if needed
@@ -140,7 +140,7 @@ jobs:
         run: |
           cp ./tmp/assets/lookup_rules.json ./src/assets/lookup_rules.json
           echo $LATEST_TS_LOOKUP_RULES > ./src/ts/lookup_rules.txt
-          echo "1" > ./src/deploy/lookup_rules
+          #echo "1" > ./src/deploy/lookup_rules
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Update Code Base if needed
@@ -148,7 +148,7 @@ jobs:
         run: |
           cp ./tmp/assets/code_base.json ./src/assets/code_base.json
           echo $LATEST_TS_CODE_BASE > ./src/ts/code_base.txt
-          echo "1" > ./src/deploy/code_base
+          #echo "1" > ./src/deploy/code_base
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
       - name: Bundle code and Deploy to Segemnt
