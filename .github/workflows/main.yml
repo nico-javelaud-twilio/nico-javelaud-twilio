@@ -21,7 +21,7 @@ jobs:
       STATIC_RULES_ID: "sfnc_hxdpUMFSYO"
       LOOKUP_RULES_ID: "sfnc_TNhNLzGwpl"
       CODE_BASE_ID: "sfnc_CsJWT9QA9V"
-      CORE_INGESTION_FUNCTION_ID: "dkZptWMBoYqtawTMcY8RK4"
+      CORE_INGESTION_FUNCTION_ID: "sfnc_eG2vAhui8Y"
 
     steps:
       - uses: actions/checkout@v2
