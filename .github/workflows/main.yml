@@ -137,6 +137,16 @@ jobs:
           echo "1" > ./src/deploy/lookup_rules
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
+      - name: Bundle code and Deploy to Segemnt
+        run: |
+          LIBRARY=$(jq -s 'reduce .[] as $item({}; . * $item)' ./src/assets/taxonomy_core.json ./src/assets/taxonomy_updates.json ./src/assets/json_rules.json ./src/assets/lookup_rules.json)
+          FUNCTION="{}"
+          PAYLOAD=$(jq '{functionId: "\(.fn_id)", code: "const library=\(.library);\(.base)"}' <<EOF
+          {"fn_id":"${{env.CORE_INGESTION_FUNCTION_ID}}","library": $LIBRARY, "base": "$FUNCTION"}
+          EOF) 
+          echo $PAYLOAD > payload.json
+          (curl --fail --location --request PATCH '${{env.BASE_URL}}/functions/${{env.CORE_INGESTION_FUNCTION_ID}}' --header 'Authorization: Bearer ${{secrets.ACCESS_TOKEN}}' --header 'Content-Type: application/json' -d '@payload.json' || { exit 1;})
+
       - name: Commit/Push files in the output folder
         if: ${{ env.GIT_PUSH_REQUIRED == 1 }}
         run: |
@@ -146,11 +156,4 @@ jobs:
           git commit -m "Update assets"
           git push
       
-      - name: Bundle code and Deploy to Segemnt
-        run: |
-          LIBRARY=$(jq -s 'reduce .[] as $item({}; . * $item)' ./src/assets/taxonomy_core.json ./src/assets/taxonomy_updates.json ./src/assets/json_rules.json ./src/assets/lookup_rules.json)
-          FUNCTION="{}"
-          jq '{functionId: "\(.fn_id)", code: "const library=\(.library);\(.base)"}' <<EOF
-          {"fn_id":"abc","library": $LIBRARY, "base": "$FUNCTION"}
-          EOF
-
+      
