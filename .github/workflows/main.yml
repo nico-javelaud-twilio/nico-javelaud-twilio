@@ -16,48 +16,48 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BASE_URL: "https://api.segmentapis.com"
-      TAXONOMY_CORE_ID: "tp_1wp3VoPyrRCNbl3lJT6PDUCi5rN"
-      TAXONOMY_UPDATES_ID: "tp_1ybAXDkFHogu5SarT9gozVQYu6j"
-      JSON_RULES_ID: "sfnc_hxdpUMFSYO"
+      CONFIG_TAXONOMY_ID: "tp_1wp3VoPyrRCNbl3lJT6PDUCi5rN"
+      BUSINESS_TAXONOMY_ID: "tp_1ybAXDkFHogu5SarT9gozVQYu6j"
+      STATIC_RULES_ID: "sfnc_hxdpUMFSYO"
       LOOKUP_RULES_ID: "sfnc_TNhNLzGwpl"
-      CODE_BASE_ID: ""
+      CODE_BASE_ID: "sfnc_CsJWT9QA9V"
       CORE_INGESTION_FUNCTION_ID: "dkZptWMBoYqtawTMcY8RK4"
 
     steps:
       - uses: actions/checkout@v2
       
-      - name: Initialize env variables
+      - name: Initialize env variables and folder structure
         run: |
-          echo "TS_TAXONOMY_CORE=$(cat ./src/ts/taxonomy_core.txt)" >> $GITHUB_ENV
-          echo "TS_TAXONOMY_UPDATES=$(cat ./src/ts/taxonomy_updates.txt)" >> $GITHUB_ENV
-          echo "TS_JSON_RULES=$(cat ./src/ts/json_rules.txt)" >> $GITHUB_ENV
+          echo "TS_CONFIG_TAXONOMY=$(cat ./src/ts/config_taxonomy.txt)" >> $GITHUB_ENV
+          echo "TS_BUSINESS_TAXONOMY=$(cat ./src/ts/business_taxonomy.txt)" >> $GITHUB_ENV
+          echo "TS_STATIC_RULES=$(cat ./src/ts/static_rules.txt)" >> $GITHUB_ENV
           echo "TS_LOOKUP_RULES=$(cat ./src/ts/lookup_rules.txt)" >> $GITHUB_ENV
+          
+          mkdir tmp
+          mkdir tmp/ts
+          mkdir tmp/raw
+          mkdir tmp/assets
         
       - name: Check latest update timestamp for each asset
         run: |
-            mkdir tmp
-            mkdir tmp/ts
-            mkdir tmp/raw
-            mkdir tmp/assets
+            LATEST_CONFIG_TAXONOMY=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.CONFIG_TAXONOMY_ID}}" || { exit 1;})
+            echo "LATEST_TS_CONFIG_TAXONOMY=$(echo $LATEST_CONFIG_TAXONOMY | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
             
-            LATEST_TAXONOMY_CORE=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_CORE_ID}}" || { exit 1;})
-            echo "LATEST_TS_TAXONOMY_CORE=$(echo $LATEST_TAXONOMY_CORE | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
+            LATEST_BUSINESS_TAXONOMY=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.BUSINESS_TAXONOMY_ID}}" || { exit 1;})
+            echo "LATEST_TS_BUSINESS_TAXONOMY=$(echo $LATEST_BUSINESS_TAXONOMY | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
             
-            LATEST_TAXONOMY_UPDATES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_UPDATES_ID}}" || { exit 1;})
-            echo "LATEST_TS_TAXONOMY_UPDATES=$(echo $LATEST_TAXONOMY_UPDATES | jq '.data.trackingPlan.updatedAt')" >> $GITHUB_ENV
-            
-            LATEST_JSON_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.JSON_RULES_ID}}" || { exit 1;})
-            echo $LATEST_JSON_RULES > ./tmp/raw/json_rules.json 
-            echo "LATEST_TS_JSON_RULES=$(cat ./tmp/raw/json_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
-            (echo $LATEST_JSON_RULES | jq '{staticRules:.data.function.code}') > ./tmp/assets/json_rules.json            
+            LATEST_STATIC_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.JSON_RULES_ID}}" || { exit 1;})
+            echo $LATEST_STATIC_RULES > ./tmp/raw/static_rules.json 
+            echo "LATEST_TS_STATIC_RULES=$(cat ./tmp/raw/static_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
+            (echo $LATEST_STATIC_RULES | jq '{staticRules:.data.function.code}') > ./tmp/assets/static_rules.json            
             
             LATEST_LOOKUP_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/functions/${{env.LOOKUP_RULES_ID}}" || { exit 1;})
             echo $LATEST_LOOKUP_RULES > ./tmp/raw/lookup_rules.json 
             echo "LATEST_TS_LOOKUP_RULES=$(cat ./tmp/raw/lookup_rules.json | jq '.data.function.deployedAt')" >> $GITHUB_ENV
             (echo $LATEST_LOOKUP_RULES | jq '{lookupRules:.data.function.code}') > ./tmp/assets/lookup_rules.json
             
-      - name: Update Taxonomy Core if needed
-        if: ${{ env.LATEST_TS_TAXONOMY_CORE != env.TS_TAXONOMY_CORE }}
+      - name: Update Config Taxonomy if needed
+        if: ${{ env.LATEST_TS_CONFIG_TAXONOMY != env.TS_CONFIG_TAXONOMY }}
         run: |
           COUNTER=1
           NEXT_PAGE_EXISTS=true
@@ -67,16 +67,16 @@ jobs:
           until [ $NEXT_PAGE_EXISTS == false ]
           do
               echo i: $COUNTER
-              TAXONOMY_CORE_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_CORE_ID}}/rules?pagination.count=200&$FULL_CURSOR" || { exit 1;})
-              RULES_COUNT_IN_RESPONSE=$(echo $TAXONOMY_CORE_RULES | jq '.data.rules | length')
+              CONFIG_TAXONOMY_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.CONFIG_TAXONOMY_ID}}/rules?pagination.count=200&$FULL_CURSOR" || { exit 1;})
+              RULES_COUNT_IN_RESPONSE=$(echo $CONFIG_TAXONOMY_RULES | jq '.data.rules | length')
               echo "COUNT "$RULES_COUNT_IN_RESPONSE
               if [ $RULES_COUNT_IN_RESPONSE -gt 0 ];
               then
-                  TMP_RULES=$(echo $TAXONOMY_CORE_RULES | jq '.data.rules')
-                  echo $TAXONOMY_CORE_RULES > ./tmp/assets/taxonomy_core_rules_$COUNTER.json
-                  CURSOR=$(echo $TAXONOMY_CORE_RULES | jq -r '.data.pagination.next')
+                  TMP_RULES=$(echo $CONFIG_TAXONOMY_RULES | jq '.data.rules')
+                  echo $CONFIG_TAXONOMY_RULES > ./tmp/assets/config_taxonomy_rules_$COUNTER.json
+                  CURSOR=$(echo $CONFIG_TAXONOMY_RULES | jq -r '.data.pagination.next')
                   FULL_CURSOR="&pagination.cursor=$CURSOR"
-                  LIST_FILENAMES+=" ./tmp/assets/taxonomy_core_rules_$COUNTER.json"
+                  LIST_FILENAMES+=" ./tmp/assets/config_taxonomy_rules_$COUNTER.json"
               else
                   NEXT_PAGE_EXISTS=false
               fi
@@ -84,14 +84,14 @@ jobs:
               ((COUNTER+=1))
           done
 
-          echo $(jq -s '{ taxonomyConfig: map(.data.rules[]) }' $LIST_FILENAMES) > ./tmp/assets/taxonomy_core.json 
-          cp ./tmp/assets/taxonomy_core.json ./src/assets/taxonomy_core.json
-          echo $LATEST_TS_TAXONOMY_CORE > ./src/ts/taxonomy_core.txt
-          echo "1" > ./src/deploy/taxonomy_core
+          echo $(jq -s '{ configTaxonomy: map(.data.rules[]) }' $LIST_FILENAMES) > ./tmp/assets/config_taxonomy.json 
+          cp ./tmp/assets/config_taxonomy.json ./src/assets/config_taxonomy.json
+          echo $LATEST_TS_CONFIG_TAXONOMY > ./src/ts/config_taxonomy.txt
+          echo "1" > ./src/deploy/config_taxonomy
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
-      - name: Update Taxonomy Updates if needed
-        if: ${{ env.LATEST_TS_TAXONOMY_UPDATES != env.TS_TAXONOMY_UPDATES }}
+      - name: Update Business Taxonomy if needed
+        if: ${{ env.LATEST_TS_BUSINESS_TAXONOMY != env.TS_BUSINESS_TAXONOMY }}
         run: |
           COUNTER=1
           NEXT_PAGE_EXISTS=true
@@ -100,32 +100,32 @@ jobs:
           until [ $NEXT_PAGE_EXISTS == false ]
           do
               echo i: $COUNTER
-              TAXONOMY_UPDATES_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.TAXONOMY_UPDATES_ID}}/rules?pagination.count=200&$FULL_CURSOR" || { exit 1;})
-              RULES_COUNT_IN_RESPONSE=$(echo $TAXONOMY_UPDATES_RULES | jq '.data.rules | length')
+              BUSINESS_TAXONOMY_RULES=$(curl --fail --location --request GET --header "Authorization: Bearer ${{secrets.ACCESS_TOKEN}}" --url "${{env.BASE_URL}}/tracking-plans/${{env.BUSINESS_TAXONOMY_ID}}/rules?pagination.count=200&$FULL_CURSOR" || { exit 1;})
+              RULES_COUNT_IN_RESPONSE=$(echo $BUSINESS_TAXONOMY_RULES | jq '.data.rules | length')
               echo "COUNT "$RULES_COUNT_IN_RESPONSE
               if [ $RULES_COUNT_IN_RESPONSE -gt 0 ];
               then
-                  TMP_RULES=$(echo $TAXONOMY_UPDATES_RULES | jq '.data.rules')
-                  echo $TAXONOMY_UPDATES_RULES > ./tmp/assets/taxonomy_updates_rules_$COUNTER.json
-                  CURSOR=$(echo $TAXONOMY_UPDATES_RULES | jq -r '.data.pagination.next')
+                  TMP_RULES=$(echo $BUSINESS_TAXONOMY_RULES | jq '.data.rules')
+                  echo $BUSINESS_TAXONOMY_RULES > ./tmp/assets/business_taxonomy_rules_$COUNTER.json
+                  CURSOR=$(echo $BUSINESS_TAXONOMY_RULES | jq -r '.data.pagination.next')
                   FULL_CURSOR="&pagination.cursor=$CURSOR"
-                  LIST_FILENAMES+=" ./tmp/assets/taxonomy_updates_rules_$COUNTER.json"
+                  LIST_FILENAMES+=" ./tmp/assets/business_taxonomy_rules_$COUNTER.json"
               else
                   NEXT_PAGE_EXISTS=false
               fi
               ((COUNTER+=1))
           done
-          echo $(jq -s '{ taxonomyBusiness: map(.data.rules[]|tostring) }' $LIST_FILENAMES) > ./tmp/assets/taxonomy_updates.json 
-          cp ./tmp/assets/taxonomy_updates.json ./src/assets/taxonomy_updates.json
-          echo $LATEST_TS_TAXONOMY_UPDATES > ./src/ts/taxonomy_updates.txt
-          echo "1" > ./src/deploy/taxonomy_update
+          echo $(jq -s '{ businessTaxonomy: map(.data.rules[]|tostring) }' $LIST_FILENAMES) > ./tmp/assets/business_taxonomy.json 
+          cp ./tmp/assets/business_taxonomy.json ./src/assets/business_taxonomy.json
+          echo $LATEST_TS_BUSINESS_TAXONOMY > ./src/ts/business_taxonomy.txt
+          echo "1" > ./src/deploy/business_taxonomy
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
-      - name: Update JSON Rules if needed
-        if: ${{ env.LATEST_TS_JSON_RULES != env.TS_JSON_RULES }}
+      - name: Update Static Rules if needed
+        if: ${{ env.LATEST_TS_STATIC_RULES != env.TS_STATIC_RULES }}
         run: |
-          cp ./tmp/assets/json_rules.json ./src/assets/json_rules.json
-          echo $LATEST_TS_JSON_RULES > ./src/ts/json_rules.txt
+          cp ./tmp/assets/static_rules.json ./src/assets/static_rules.json
+          echo $LATEST_TS_STATIC_RULES > ./src/ts/json_rules.txt
           echo "1" > ./src/deploy/json_rules
           echo "GIT_PUSH_REQUIRED=1" >> $GITHUB_ENV
           
@@ -139,7 +139,7 @@ jobs:
           
       - name: Bundle code and Deploy to Segemnt
         run: |
-          LIBRARY=$(jq -s 'reduce .[] as $item({}; . * $item)' ./src/assets/taxonomy_core.json ./src/assets/taxonomy_updates.json ./src/assets/json_rules.json ./src/assets/lookup_rules.json)
+          LIBRARY=$(jq -s 'reduce .[] as $item({}; . * $item)' ./src/assets/config_taxonomy.json ./src/assets/business_taxonomy.json ./src/assets/static_rules.json ./src/assets/lookup_rules.json)
           FUNCTION="{}"
           PAYLOAD=$(jq '{functionId: "\(.fn_id)", code: "const library=\(.library);\(.base)"}' <<EOF
           {"fn_id":"${{env.CORE_INGESTION_FUNCTION_ID}}","library": $LIBRARY, "base": "$FUNCTION"}
