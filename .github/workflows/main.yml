@@ -154,7 +154,7 @@ jobs:
       - name: Bundle code and Deploy to Segemnt
         run: |
           LIBRARY=$(jq -s 'reduce .[] as $item({}; . * $item)' ./src/assets/config_taxonomy.json ./src/assets/business_taxonomy.json ./src/assets/static_rules.json ./src/assets/lookup_rules.json)
-          FUNCTION="{}"
+          FUNCTION=$(jq '.code' ./src/assets/code_base.json)
           PAYLOAD=$(jq '{functionId: "\(.fn_id)", code: "const library=\(.library);\(.base)"}' <<EOF
           {"fn_id":"${{env.CORE_INGESTION_FUNCTION_ID}}","library": $LIBRARY, "base": "$FUNCTION"}
           EOF) 
